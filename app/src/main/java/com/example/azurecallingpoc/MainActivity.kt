@@ -10,13 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.azure.android.communication.common.CommunicationTokenCredential
 import com.azure.android.communication.common.CommunicationUserIdentifier
-import com.azure.communication.calling.CallAgent
-import com.azure.communication.calling.CallClient
-import com.azure.communication.calling.StartCallOptions
+import com.azure.communication.calling.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var callAgent: CallAgent
+    private val callClient = CallClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,9 +69,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCall() {
+        // get callee id
         val calleeIdView: EditText = findViewById(R.id.callee_id)
         val calleeId = calleeIdView.text.toString()
+
+        // get devices
+        val deviceManager = callClient.deviceManager.get()
+        val microphone = deviceManager.microphoneList[0]
+        val speaker = deviceManager.speakerList[0]
+        val camera = deviceManager.cameraList[0]
+
+        // set devices to options
+        val videoStream = LocalVideoStream(camera, applicationContext)
+        val videoCallOptions = VideoOptions(videoStream)
         val options = StartCallOptions()
+        options.videoOptions = videoCallOptions
+        deviceManager.microphone = microphone
+        deviceManager.speaker = speaker
+
+        // start the call
         callAgent.call(
                 applicationContext,
                 arrayOf(CommunicationUserIdentifier(calleeId)),
