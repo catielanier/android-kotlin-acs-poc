@@ -8,8 +8,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.azure.android.communication.common.CommunicationUser
-import com.azure.android.communication.common.CommunicationUserCredential
+import com.azure.android.communication.common.CommunicationTokenCredential
+import com.azure.android.communication.common.CommunicationUserIdentifier
 import com.azure.communication.calling.CallAgent
 import com.azure.communication.calling.CallClient
 import com.azure.communication.calling.StartCallOptions
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     private fun createAgent() {
         val userToken: String = BuildConfig.ACS_KEY
         try {
-            val credential = CommunicationUserCredential(userToken)
+            val credential = CommunicationTokenCredential(userToken)
             callAgent = CallClient().createCallAgent(applicationContext, credential).get()
         } catch (ex: Exception) {
             Toast.makeText(
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         val options = StartCallOptions()
         callAgent.call(
                 applicationContext,
-                arrayOf(CommunicationUser(calleeId)),
+                arrayOf(CommunicationUserIdentifier(calleeId)),
                 options
         )
     }
