@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     private val callClient = CallClient()
     private lateinit var callButton: Button
     private lateinit var endCallButton: Button
+    private lateinit var call: Call
+    private lateinit var videoView: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +34,9 @@ class MainActivity : AppCompatActivity() {
         endCallButton = findViewById(R.id.end_call_button)
         callButton.setOnClickListener {
             startCall()
+        }
+        endCallButton.setOnClickListener {
+            endCall()
         }
     }
 
@@ -104,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         deviceManager.speaker = speaker
 
         // start the call
-        callAgent.call(
+        call = callAgent.call(
                 applicationContext,
                 arrayOf(CommunicationUserIdentifier(calleeId)),
                 options
@@ -113,13 +118,16 @@ class MainActivity : AppCompatActivity() {
         // setup video preview
         val preview: Renderer = Renderer(videoStream, applicationContext)
         val uiView: View = preview.createView(RenderingOptions(ScalingMode.Fit))
-        val videoView: LinearLayout = findViewById(R.id.video_view)
+        videoView = findViewById(R.id.video_view)
         videoView.addView(uiView)
         callButton.visibility = View.GONE
         endCallButton.visibility = View.VISIBLE
     }
 
     private fun endCall() {
-
+        call.hangup(HangupOptions())
+        videoView.removeAllViews()
+        endCallButton.visibility = View.GONE
+        callButton.visibility = View.VISIBLE
     }
 }
