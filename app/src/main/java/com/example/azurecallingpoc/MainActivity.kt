@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var callAgent: CallAgent
     private val callClient = CallClient()
+    private lateinit var callButton: Button
+    private lateinit var endCallButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +28,8 @@ class MainActivity : AppCompatActivity() {
         getAllPermissions()
         createAgent()
 
-        val callButton: Button = findViewById(R.id.call_button)
+        callButton = findViewById(R.id.call_button)
+        endCallButton = findViewById(R.id.end_call_button)
         callButton.setOnClickListener {
             startCall()
         }
@@ -112,5 +115,11 @@ class MainActivity : AppCompatActivity() {
         val uiView: View = preview.createView(RenderingOptions(ScalingMode.Fit))
         val videoView: LinearLayout = findViewById(R.id.video_view)
         videoView.addView(uiView)
+        callButton.visibility = View.GONE
+        endCallButton.visibility = View.VISIBLE
+    }
+
+    private fun endCall() {
+
     }
 }
