@@ -3,8 +3,10 @@ package com.example.azurecallingpoc
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -73,6 +75,17 @@ class MainActivity : AppCompatActivity() {
         val calleeIdView: EditText = findViewById(R.id.callee_id)
         val calleeId = calleeIdView.text.toString()
 
+        // check for user input of id, and return a visible error message if empty string/null
+        if (calleeId == "") {
+            Toast.makeText(
+                    applicationContext,
+                    "Please enter a callee id.",
+                    Toast.LENGTH_SHORT
+            ).show()
+
+            return
+        }
+
         // get devices
         val deviceManager = callClient.deviceManager.get()
         val microphone = deviceManager.microphoneList[0]
@@ -93,5 +106,11 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(CommunicationUserIdentifier(calleeId)),
                 options
         )
+
+        // setup video preview
+        val preview: Renderer = Renderer(videoStream, applicationContext)
+        val uiView: View = preview.createView(RenderingOptions(ScalingMode.Fit))
+        val videoView: LinearLayout = findViewById(R.id.video_view)
+        videoView.addView(uiView)
     }
 }
