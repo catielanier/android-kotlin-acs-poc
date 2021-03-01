@@ -24,7 +24,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var remoteView: LinearLayout
     private lateinit var statusBar: TextView
     private lateinit var videoStream: LocalVideoStream
-    var isMuted: Boolean = false
+    private var isMuted: Boolean = false
+    private var videoIsBroadcasting: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,6 +155,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun endCall() {
+        call.stopVideo(videoStream)
         call.hangup(HangupOptions())
         videoView.removeAllViews()
         remoteView.removeAllViews()
@@ -189,13 +191,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun disableVideo() {
-        val cameraIsEnabled = call.localVideoStreams
-        if (cameraIsEnabled.isNotEmpty() && cameraIsEnabled[0].isSending) {
+        if (videoIsBroadcasting) {
             call.stopVideo(videoStream)
+            videoView.visibility = View.GONE
             stopVideoButton.text = "Show Video"
+            videoIsBroadcasting = false
         } else {
             println("not broadcasting")
             call.startVideo(videoStream)
+            videoView.visibility = View.VISIBLE
+            videoIsBroadcasting = true
             stopVideoButton.text = "Hide Video"
         }
     }
