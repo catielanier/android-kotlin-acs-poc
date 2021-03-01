@@ -19,7 +19,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var endCallButton: Button
     private lateinit var call: Call
     private lateinit var videoView: LinearLayout
+    private lateinit var remoteView: LinearLayout
     private lateinit var statusBar: TextView
+    private lateinit var remoteParticipant: RemoteParticipant
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,19 +109,21 @@ class MainActivity : AppCompatActivity() {
         deviceManager.microphone = microphone
         deviceManager.speaker = speaker
 
-        // set remote stream
-        val remoteParticipant = RemoteParticipant(1, false)
-        val videoStreams = remoteParticipant.videoStreams
-        if (videoStreams.isNotEmpty()) {
-            addStream(videoStreams[0])
-        }
-
         // start the call
         call = callAgent.call(
                 applicationContext,
                 arrayOf(CommunicationUserIdentifier(calleeId)),
                 options
         )
+
+        // set remote stream
+        val remoteParticipants = call.remoteParticipants
+        if (remoteParticipants.isNotEmpty()) {
+            val remoteStreams = remoteParticipants[0].videoStreams
+            if (remoteStreams.isNotEmpty()) {
+                addStream(remoteStreams[0])
+            }
+        }
 
         // setup video preview
         val preview: Renderer = Renderer(videoStream, applicationContext)
@@ -146,6 +150,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addStream(remoteVideoStream: RemoteVideoStream) {
-
+        val videoRender: Renderer = Renderer(remoteVideoStream, applicationContext)
+        val uiView: View = videoRender.createView(RenderingOptions(ScalingMode.Fit))
+        remoteView = findViewById(R.id.remote_view)
+        remoteView.addView(uiView)
     }
 }
