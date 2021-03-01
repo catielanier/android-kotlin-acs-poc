@@ -107,6 +107,13 @@ class MainActivity : AppCompatActivity() {
         deviceManager.microphone = microphone
         deviceManager.speaker = speaker
 
+        // set remote stream
+        val remoteParticipant = RemoteParticipant(1, false)
+        val videoStreams = remoteParticipant.videoStreams
+        if (videoStreams.isNotEmpty()) {
+            addStream(videoStreams[0])
+        }
+
         // start the call
         call = callAgent.call(
                 applicationContext,
@@ -136,5 +143,9 @@ class MainActivity : AppCompatActivity() {
         runOnUiThread {
             statusBar.text = status
         }
+    }
+
+    private fun addStream(remoteVideoStream: RemoteVideoStream) {
+
     }
 }
