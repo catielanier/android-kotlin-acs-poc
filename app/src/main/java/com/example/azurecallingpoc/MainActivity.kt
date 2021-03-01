@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var videoView: LinearLayout
     private lateinit var remoteView: LinearLayout
     private lateinit var statusBar: TextView
-    private lateinit var remoteParticipant: RemoteParticipant
+    private lateinit var videoStream: LocalVideoStream
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         val camera = deviceManager.cameraList[0]
 
         // set devices to options
-        val videoStream = LocalVideoStream(camera, applicationContext)
+        videoStream = LocalVideoStream(camera, applicationContext)
         val videoCallOptions = VideoOptions(videoStream)
         val options = StartCallOptions()
         options.videoOptions = videoCallOptions
@@ -155,5 +155,23 @@ class MainActivity : AppCompatActivity() {
         val uiView: View = videoRender.createView(RenderingOptions(ScalingMode.Fit))
         remoteView = findViewById(R.id.remote_view)
         remoteView.addView(uiView)
+    }
+
+    private fun muteMicrophone() {
+        val isMuted = call.isMicrophoneMuted
+        if (isMuted) {
+            call.unmute()
+        } else {
+            call.mute()
+        }
+    }
+
+    private fun disableVideo() {
+        val cameraIsEnabled = call.localVideoStreams
+        if (cameraIsEnabled.isNotEmpty()) {
+            call.stopVideo(cameraIsEnabled[0])
+        } else {
+            call.startVideo(cameraIsEnabled[0])
+        }
     }
 }
