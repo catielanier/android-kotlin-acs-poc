@@ -4,10 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.azure.android.communication.common.CommunicationTokenCredential
@@ -22,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var endCallButton: Button
     private lateinit var call: Call
     private lateinit var videoView: LinearLayout
+    private lateinit var statusBar: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         callButton = findViewById(R.id.call_button)
         endCallButton = findViewById(R.id.end_call_button)
+        statusBar = findViewById(R.id.status_bar)
         callButton.setOnClickListener {
             startCall()
         }
@@ -122,6 +121,7 @@ class MainActivity : AppCompatActivity() {
         videoView.addView(uiView)
         callButton.visibility = View.GONE
         endCallButton.visibility = View.VISIBLE
+        setStatus("Connected")
     }
 
     private fun endCall() {
@@ -129,5 +129,12 @@ class MainActivity : AppCompatActivity() {
         videoView.removeAllViews()
         endCallButton.visibility = View.GONE
         callButton.visibility = View.VISIBLE
+        setStatus("Disconnected")
+    }
+
+    private fun setStatus(status: String) {
+        runOnUiThread {
+            statusBar.text = status
+        }
     }
 }
