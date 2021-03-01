@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var remoteView: LinearLayout
     private lateinit var statusBar: TextView
     private lateinit var videoStream: LocalVideoStream
+    var isMuted: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -126,6 +127,8 @@ class MainActivity : AppCompatActivity() {
                 options
         )
 
+        call.startVideo(videoStream)
+
         // set remote stream
         remoteView = findViewById(R.id.remote_view)
         val remoteParticipants = call.remoteParticipants
@@ -153,9 +156,7 @@ class MainActivity : AppCompatActivity() {
     private fun endCall() {
         call.hangup(HangupOptions())
         videoView.removeAllViews()
-        if (remoteView != null) {
-            remoteView.removeAllViews()
-        }
+        remoteView.removeAllViews()
         endCallButton.visibility = View.GONE
         muteAudioButton.visibility = View.GONE
         stopVideoButton.visibility = View.GONE
@@ -176,23 +177,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun muteMicrophone() {
-        val isMuted = call.isMicrophoneMuted
         if (isMuted) {
             call.unmute()
             muteAudioButton.text = "Mute"
+            isMuted = false
         } else {
             call.mute()
             muteAudioButton.text = "Unmute"
+            isMuted = true
         }
     }
 
     private fun disableVideo() {
         val cameraIsEnabled = call.localVideoStreams
         if (cameraIsEnabled.isNotEmpty() && cameraIsEnabled[0].isSending) {
-            call.stopVideo(cameraIsEnabled[0])
+            call.stopVideo(videoStream)
             stopVideoButton.text = "Show Video"
         } else {
-            call.startVideo(cameraIsEnabled[0])
+            println("not broadcasting")
+            call.startVideo(videoStream)
             stopVideoButton.text = "Hide Video"
         }
     }

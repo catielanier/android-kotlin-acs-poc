@@ -22,6 +22,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="10dp"
         android:text="Hang Up"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -33,9 +34,9 @@
         android:visibility="gone"
         android:layout_marginBottom="16dp"
         android:text="Mute"
-        android:layout_marginStart="10dp"
+        android:layout_marginHorizontal="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/end_call_button" />
+        app:layout_constraintStart_toEndOf="@id/end_call_button" />
 
     <Button
         android:id="@+id/stop_video_button"
@@ -43,11 +44,10 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_marginBottom="16dp"
-        android:text="Show Video"
-        android:layout_marginStart="10dp"
+        android:text="Hide Video"
+        android:layout_marginHorizontal="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/mute_audio_button" />
+        app:layout_constraintStart_toEndOf="@id/mute_audio_button" />
 
     <EditText
         android:id="@+id/callee_id"
