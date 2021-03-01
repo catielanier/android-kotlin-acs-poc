@@ -138,6 +138,7 @@ class MainActivity : AppCompatActivity() {
     private fun endCall() {
         call.hangup(HangupOptions())
         videoView.removeAllViews()
+        remoteView.removeAllViews()
         endCallButton.visibility = View.GONE
         callButton.visibility = View.VISIBLE
         setStatus("Disconnected")
