@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     private val callClient = CallClient()
     private lateinit var callButton: Button
     private lateinit var endCallButton: Button
+    private lateinit var muteAudioButton: Button
+    private lateinit var stopVideoButton: Button
     private lateinit var call: Call
     private lateinit var videoView: LinearLayout
     private lateinit var remoteView: LinearLayout
@@ -32,12 +34,20 @@ class MainActivity : AppCompatActivity() {
 
         callButton = findViewById(R.id.call_button)
         endCallButton = findViewById(R.id.end_call_button)
+        muteAudioButton = findViewById(R.id.mute_audio_button)
+        stopVideoButton = findViewById(R.id.stop_video_button)
         statusBar = findViewById(R.id.status_bar)
         callButton.setOnClickListener {
             startCall()
         }
         endCallButton.setOnClickListener {
             endCall()
+        }
+        muteAudioButton.setOnClickListener {
+            muteMicrophone()
+        }
+        stopVideoButton.setOnClickListener {
+            disableVideo()
         }
     }
 
@@ -117,10 +127,13 @@ class MainActivity : AppCompatActivity() {
         )
 
         // set remote stream
+        remoteView = findViewById(R.id.remote_view)
         val remoteParticipants = call.remoteParticipants
         if (remoteParticipants.isNotEmpty()) {
+            println("has remote participant")
             val remoteStreams = remoteParticipants[0].videoStreams
             if (remoteStreams.isNotEmpty()) {
+                println("has remote stream")
                 addStream(remoteStreams[0])
             }
         }
@@ -132,14 +145,20 @@ class MainActivity : AppCompatActivity() {
         videoView.addView(uiView)
         callButton.visibility = View.GONE
         endCallButton.visibility = View.VISIBLE
+        muteAudioButton.visibility = View.VISIBLE
+        stopVideoButton.visibility = View.VISIBLE
         setStatus("Connected")
     }
 
     private fun endCall() {
         call.hangup(HangupOptions())
         videoView.removeAllViews()
-        remoteView.removeAllViews()
+        if (remoteView != null) {
+            remoteView.removeAllViews()
+        }
         endCallButton.visibility = View.GONE
+        muteAudioButton.visibility = View.GONE
+        stopVideoButton.visibility = View.GONE
         callButton.visibility = View.VISIBLE
         setStatus("Disconnected")
     }
@@ -153,7 +172,6 @@ class MainActivity : AppCompatActivity() {
     private fun addStream(remoteVideoStream: RemoteVideoStream) {
         val videoRender: Renderer = Renderer(remoteVideoStream, applicationContext)
         val uiView: View = videoRender.createView(RenderingOptions(ScalingMode.Fit))
-        remoteView = findViewById(R.id.remote_view)
         remoteView.addView(uiView)
     }
 
@@ -161,17 +179,21 @@ class MainActivity : AppCompatActivity() {
         val isMuted = call.isMicrophoneMuted
         if (isMuted) {
             call.unmute()
+            muteAudioButton.text = "Mute"
         } else {
             call.mute()
+            muteAudioButton.text = "Unmute"
         }
     }
 
     private fun disableVideo() {
         val cameraIsEnabled = call.localVideoStreams
-        if (cameraIsEnabled.isNotEmpty()) {
+        if (cameraIsEnabled.isNotEmpty() && cameraIsEnabled[0].isSending) {
             call.stopVideo(cameraIsEnabled[0])
+            stopVideoButton.text = "Show Video"
         } else {
             call.startVideo(cameraIsEnabled[0])
+            stopVideoButton.text = "Hide Video"
         }
     }
 }
