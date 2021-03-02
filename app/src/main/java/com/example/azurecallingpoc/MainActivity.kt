@@ -7,9 +7,9 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.azure.android.communication.calling.*
 import com.azure.android.communication.common.CommunicationTokenCredential
 import com.azure.android.communication.common.CommunicationUserIdentifier
-import com.azure.communication.calling.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -111,9 +111,9 @@ class MainActivity : AppCompatActivity() {
 
         // get devices
         deviceManager = callClient.deviceManager.get()
-        val microphone = deviceManager.microphoneList[0]
-        val speaker = deviceManager.speakerList[0]
-        val camera = deviceManager.cameraList[0]
+        val microphone = deviceManager.microphones[0]
+        val speaker = deviceManager.speakers[0]
+        val camera = deviceManager.cameras[0]
 
         // set devices to options
         videoStream = LocalVideoStream(camera, applicationContext)
@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
         deviceManager.speaker = speaker
 
         // start the call
-        call = callAgent.call(
+        call = callAgent.startCall(
                 applicationContext,
                 arrayOf(CommunicationUserIdentifier(calleeId)),
                 options
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun endCall() {
         call.stopVideo(videoStream).get()
-        call.hangup(HangupOptions())
+        call.hangUp(HangUpOptions())
         videoView.removeAllViews()
         remoteView.removeAllViews()
         endCallButton.visibility = View.GONE
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             videoIsBroadcasting = false
         } else {
             println("not broadcasting")
-            val camera = deviceManager.cameraList[0]
+            val camera = deviceManager.cameras[0]
             videoStream = LocalVideoStream(camera, applicationContext)
             call.startVideo(videoStream)
             videoView.visibility = View.VISIBLE
