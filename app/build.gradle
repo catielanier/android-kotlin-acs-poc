@@ -18,8 +18,7 @@ android {
         versionCode 1
         versionName "1.0"
         buildConfigField("String", "ACS_KEY", apiKeyProperties['ACS_KEY'])
-        buildConfigField("String", "ACS_ENDPOINT", apiKeyProperties['ACS_ENDPOINT'])
-
+        buildConfigField("String", "ACS_ENDPOINT", apiKeyProperties['ACS_ID'])
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -62,5 +61,6 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.azure.android:azure-communication-common:1.0.0-beta.7'
     implementation 'com.azure.android:azure-communication-calling:1.0.0-beta.7'
 }

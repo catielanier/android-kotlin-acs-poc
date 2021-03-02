@@ -26,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var videoStream: LocalVideoStream
     private var isMuted: Boolean = false
     private var videoIsBroadcasting: Boolean = true
+    private lateinit var deviceManager: DeviceManager
+    var groupId: String = "29228d3e-040e-4656-a70e-890ab4e173e5"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // get devices
-        val deviceManager = callClient.deviceManager.get()
+        deviceManager = callClient.deviceManager.get()
         val microphone = deviceManager.microphoneList[0]
         val speaker = deviceManager.speakerList[0]
         val camera = deviceManager.cameraList[0]
@@ -128,7 +130,12 @@ class MainActivity : AppCompatActivity() {
                 options
         )
 
-        call.startVideo(videoStream)
+        println("Handle: ${callAgent.handle}")
+
+        println("Call state: ${call.state}")
+
+
+        call.startVideo(videoStream).get()
 
         // set remote stream
         remoteView = findViewById(R.id.remote_view)
@@ -155,7 +162,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun endCall() {
-        call.stopVideo(videoStream)
+        call.stopVideo(videoStream).get()
         call.hangup(HangupOptions())
         videoView.removeAllViews()
         remoteView.removeAllViews()
@@ -191,13 +198,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun disableVideo() {
-        if (videoIsBroadcasting) {
-            call.stopVideo(videoStream)
+        val cameraStreams = call.localVideoStreams
+        println(cameraStreams)
+        println(videoStream)
+        println("broadcasting: ${videoStream.isSending}")
+        if (cameraStreams.isNotEmpty() && videoIsBroadcasting) {
+            call.stopVideo(videoStream).get()
             videoView.visibility = View.GONE
             stopVideoButton.text = "Show Video"
             videoIsBroadcasting = false
         } else {
             println("not broadcasting")
+            val camera = deviceManager.cameraList[0]
+            videoStream = LocalVideoStream(camera, applicationContext)
             call.startVideo(videoStream)
             videoView.visibility = View.VISIBLE
             videoIsBroadcasting = true
